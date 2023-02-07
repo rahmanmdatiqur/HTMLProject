@@ -1,0 +1,55 @@
+body {
+    font-family: "Century Gothic";
+    font-size: .9em;
+}
+
+#container {
+    width: 980px;
+    margin: 20px auto;
+}
+
+#left {
+    width: 680px;
+    float: left;
+    padding: 5px 10px 5px 0;
+}
+
+#right {
+    width: 280px;
+    float: right;
+    padding-left: 10px;
+}
+
+.label {
+    display: block;
+    font-weight: 700;
+}
+
+input[type=text] {
+    border: 1px solid #ccc;
+}
+
+#tbl {
+    width: 100%;
+    border: 1px solid #ccc;
+}
+
+    #tbl th {
+        border-right: 1px solid #ededed;
+        border-bottom: 1px solid #ededed;
+    }
+
+    #tbl td {
+        border-right: 1px solid #ededed;
+        border-bottom: 1px solid #ededed;
+    }
+
+.edit {
+    background-color: green;
+    color: white;
+}
+
+.delete {
+    background-color: red;
+    color: white;
+}

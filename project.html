@@ -1,0 +1,163 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Project</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
+    <link href="Styles/site.css" rel="stylesheet" />
+    <script src="./Scripts/jquery.js"></script>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h2>eMedicine.Com</h2>
+        </div>
+        
+        <div class="nav">
+
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Service</a></li>
+                <li><a href="product.html">product</a></li>
+                <li><a href="add_product.html">Add Product</a></li>
+                <li><a href="#">Blog</a></li>
+                <li><a href="#">Contact</a></li>  
+                <li><a href="cart.html"><i class="fa-sharp fa-solid fa-cart-shopping"></i></a></li>
+            </ul>
+            <div class="search-box">
+                <input id="searchinput" type="text" name="name" value="" />
+                <button id="btnsearch">Search</button>
+            </div>
+
+        </div>
+    </header>
+
+    <section class="content-section">
+        <div class="category-section">
+            <h3>Category</h3>
+            <nav>
+                <ul class="side-category">
+                    <li><a href="">Adult Care</a></li>
+                    <li><a href="">Child Care</a></li>
+                    <li><a href="">Child & Mom Care</a></li>
+                    <li><a href="">Covid-19</a></li>
+                    <li><a href="">Women Care</a></li>
+                    <li><a href="">Supplement & Vitamin</a></li>
+                    <li><a href="">Herbal & Homeopathy</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="product-section" id="product-grid">
+
+
+            <!--<div class="card-container">
+                <div class="card">
+                    <img src="Images/Napa extra.jpg" alt="" />
+                </div>
+                <div class="card-info">
+                    <h3 class="product-title">Napa Extra</h3>
+                    <p class="product-price">TK.120</p>
+                    <button>Add to cart</button>
+                </div>
+            </div>-->
+
+
+        </div>
+    </section>
+
+
+    <script>
+
+        $(document).ready(function () {
+            var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+
+            window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
+            window.IDBCursor = window.IDBCursor || window.webkitIDBCursor;
+            window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange;
+
+            var db;
+            var currentEdit = null;
+
+            var openReq = indexedDB.open("DetailsDB", 1);
+            openReq.onupgradeneeded = function (e) {
+                db = e.target.result;
+
+                var store = db.createObjectStore("Details", { keyPath: "id", autoIncrement: true });
+                console.log(store);
+            }
+
+            openReq.onsuccess = function (e) {
+                db = e.target.result;
+                console.log(db);
+                loadProducts();
+            }
+
+
+            // Product search using search box
+
+            $("#btnsearch").on('click', function () {
+                // alert('hello');
+                var searchText = $("#searchinput").val();
+
+                $("#product-grid").empty();
+                var tx = db.transaction(["Details"], "readonly");
+                var req = tx.objectStore("Details").openCursor();
+                req.onsuccess = function (e) {
+                    var cursor = e.target.result;
+                    if (!cursor) return;
+                    if (cursor.value.ProductTitle.toLowerCase().includes(searchText.toLowerCase())) {
+                        $("#product-grid").append(
+
+                `<div class="card-container">
+                    <div class="card">
+                        <img src="Images/${cursor.value.ProductImage}" alt="" />
+                    </div>
+                    <div class="card-info">
+                        <h3 class="product-title">${cursor.value.ProductTitle}</h3>
+                        <p class="product-price">TK.${cursor.value.ProductPrice}</p>
+                        <button class="add-to-cart" data-product-id="${cursor.key}">Add to cart</button>
+                    </div>
+                </div >`
+                        );
+                    }
+                    cursor.continue();
+                }
+                req.onerror = function (err) {
+                    console.log(err);
+                }
+
+            });
+
+            function loadProducts() {
+                $("#product-grid").empty();
+                var tx = db.transaction(["Details"], "readonly");
+                var req = tx.objectStore("Details").openCursor();
+                req.onsuccess = function (e) {
+                    var cursor = e.target.result;
+                    if (!cursor) return;
+                    $("#product-grid").append(
+
+                        `<div class="card-container" >
+                    <div class="card">
+                        <img src="Images/${cursor.value.ProductImage}" alt="" />
+                    </div>
+                    <div class="card-info">
+                        <h3 class="product-title">${cursor.value.ProductTitle}</h3>
+                        <p class="product-price">TK.${cursor.value.ProductPrice}</p>
+                        <button class="add-to-cart" data-product-id="${cursor.key}">Add to cart</button>
+                    </div>
+                </div >`
+
+                    );
+                    cursor.continue();
+                }
+                req.onerror = function (err) {
+                    console.log(err);
+                }
+            }
+        });
+
+
+    </script>
+</body>
+</html>
